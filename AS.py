@@ -28,7 +28,7 @@ def LocalEnergy(r):
     x1 = r[1,0]/r2 - r[0,0]/r1
     y1 = r[1,1]/r2 - r[0,1]/r1
     z1 = r[1,2]/r2 - r[0,2]/r1
-    return ((x21 * x1 + y21 * y1 + z21*z1)/r12 - 11/4)
+    return ((x21 * x1 + y21 * y1 + z21*z1)/r12 - 17/4)
 
 def metropolis():
     R0 = np.zeros((2,3))
@@ -39,14 +39,14 @@ def metropolis():
             R0[i][j] = random()
     wv0 = WaveFunction(R0)**2
     le0 = LocalEnergy(R0)
-    delta = 0.1
+    delta = 0.05
     for i in range(2):
         for j in range(3):
             R1[i][j] = R0[i][j] + delta
     wv1 = WaveFunction(R1)**2
-    x = wv0/wv1
+    x = wv1/wv0
     E.append(le0)
-    for counter in range(1000):
+    for counter in range(10000):
         t = random()
         if x > t:
             for i in range(2):
@@ -64,17 +64,19 @@ def metropolis():
                 for i in range(2):
                     for j in range(3):
                         R1[i][j] = R1[i][j] - y
+            
                
             le0 = LocalEnergy(R1)
             E.append(le0)
             wv00 = WaveFunction(R0)**2
             wv11 = WaveFunction(R1)**2
+
             if wv11 == 0:
                 continue
-            x = wv00/wv11
-    return E
-    
-EE = metropolis()
+            x = wv11/wv00
+    return E , x
+EE, x = metropolis()
+print(x)
 print(EE)            
 mean = sum(EE)/len(EE)
 s = 0
@@ -85,6 +87,8 @@ print(mean)
 print(s)
 plt.plot(EE)
 plt.title("Energy vesus number of Iterations")
+plt.xlabel("number of iterations")
+plt.ylabel("Energy")
 plt.legend()
 plt.show()
 
